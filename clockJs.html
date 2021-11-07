@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Anolog Clock</title>
+    <link rel="shortcut icon" href="favicon.ico" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container-main">
+      <div class="clock">
+        <div class="hour">
+          <div class="hr" id="hr"></div>
+        </div>
+        <div class="minute">
+          <div class="min" id="min"></div>
+        </div>
+        <div class="secound">
+          <div class="sec" id="sec"></div>
+        </div>
+      </div>
+      <div class="container-button">
+        <a href="#" onclick="openSetAlram()">
+          <span>Set Alarm</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="container-alarm" id="setAlarm">
+      <div class="box">
+        <span></span>
+        <div class="content">
+          <div class="confirmAlarm">
+            <h2>Set Alarm</h2>
+            <p>Enter Time</p>
+            <p>Date Formate</p>
+            <input type="datetime-local" id="alarmInput" />
+            <!-- <input
+              type="text"
+              id="alarmInput"
+              placeholder="yyyy-mm-dd hh:mm:ss"
+            /> -->
+            <center>
+              <button onclick="submitAlramtime()">Set Alarm</button>
+              <button onclick="closeCard()">Close</button>
+            </center>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-StopAlarm" id="stopAlarm">
+      <div class="box">
+        <span></span>
+        <div class="content">
+          <h2>Alarm !!!</h2>
+          <h2>
+            <center>
+              <button onclick="stopAlarmButton()">Stop Alarm</button>
+              <button onclick="snoozeAlarm()">Snooze Alarm</button>
+            </center>
+          </h2>
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      // clock
+      const deg = 6;
+      const hr = document.querySelector("#hr");
+      const min = document.querySelector("#min");
+      const sec = document.querySelector("#sec");
+
+      setInterval(() => {
+        let day = new Date();
+        let hh = day.getHours() * 30;
+        let mm = day.getMinutes() * deg;
+        let ss = day.getSeconds() * deg;
+
+        hr.style.transform = `rotateZ(${hh + mm / 12}deg)`;
+        min.style.transform = `rotateZ(${mm}deg)`;
+        sec.style.transform = `rotateZ(${ss}deg)`;
+      });
+
+      //   Alarm
+      var timer;
+
+      function closeCard() {
+        document.getElementById("setAlarm").style.display = "none";
+      }
+      function openSetAlram() {
+        document.getElementById("setAlarm").style.display = "block";
+        //   document.getElementById("setAlarm").style.zIndex = 10000;
+      }
+
+      function submitAlramtime() {
+        const alarmInput = document.getElementById("alarmInput");
+        alarmDate = new Date(alarmInput.value);
+        console.log(`Setting Alarm for ${alarmDate}...`);
+        now = new Date();
+
+        var timeToAlarm = alarmDate - now;
+        console.log(timeToAlarm);
+        if (timeToAlarm >= 0) {
+          setTimeout(() => {
+            ringBell();
+          }, timeToAlarm);
+        } else if (isNaN(timeToAlarm)) {
+          alert("Invalid DateTime");
+          return;
+        } else if (timeToAlarm < 0) {
+          alert("Time is already passed");
+          return;
+        }
+
+        document.querySelector(
+          ".confirmAlarm"
+        ).outerHTML = `<div><p>Alarm set for ${alarmDate} <br><center> <button onclick="closeCard()">Ok</button>
+            <button  onClick="resetAlarm()">Cencel</button></center> </p></div>`;
+        timer = setTimeout(ringBell, timeToAlarm);
+      }
+
+      //   audio
+      var audio = new Audio();
+      audio.loop = true;
+      audio.src = "tone.mp3";
+
+      function ringBell() {
+        audio.play();
+        stopAlarm();
+      }
+      // reset Alarm
+      function resetAlarm() {
+        // clearTimeout(setTimeout());
+        window.location.reload();
+      }
+
+      //   stop Alarm
+      function stopAlarm() {
+        document.querySelector("#stopAlarm").style.display = "block";
+      }
+
+      function stopAlarmButton() {
+        audio.pause();
+        audio.currentTime = 0;
+        document.querySelector("#stopAlarm").style.display = "none";
+      }
+
+      // snooze Alarm
+      // timer = setTimeout(ringBell, timeToAlarm);
+      function snoozeAlarm() {
+        stopAlarmButton();
+        setTimeout(ringBell, 300000);
+        console.log(ringBell);
+        document.querySelector("#stopAlarm").style.display = "none";
+      }
+    </script>
+  </body>
+</html>
